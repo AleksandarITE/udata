@@ -26,10 +26,10 @@ jobs:
       - run:
           name: Install python dependencies
           command: |
-            virtualenv -ppython3.6 venv
+            python -m venv venv
             source venv/bin/activate
-            pip3 install -e . || pip3 install -e .
-            pip3 install -r requirements/circleci.pip
+            pip install -e . || pip install -e .
+            pip install -r requirements/circleci.pip
       - save_cache:
           key: py3-cache-v2-{{ arch }}-{{ checksum "python.deps" }}
           paths:
@@ -93,7 +93,6 @@ jobs:
           name: Execute Karma tests
           command: |
             mkdir -p reports/karma
-            nvm use
             REPORT_DIR=reports/karma npm -s run test:unit -- --reporters mocha,junit
       - store_test_results:
           path: reports/karma
@@ -103,7 +102,6 @@ jobs:
       - run:
           name: Compile assets
           command: |
-            nvm use
             npm run assets:build
             npm run widgets:build
             npm run oembed:build
@@ -154,7 +152,7 @@ jobs:
           at: .
       - run:
           name: Install Twine
-          command: pip3 install twine
+          command: pip install twine
       - deploy:
           name: Publish on PyPI
           command: twine upload --username "${PYPI_USERNAME}" --password "${PYPI_PASSWORD}" dist/*.whl
